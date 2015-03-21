@@ -3,6 +3,7 @@ package org.andengine.opengl.view;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import org.andengine.Trace.mTrace;
 import org.andengine.engine.Engine;
 import org.andengine.engine.options.RenderOptions;
 import org.andengine.opengl.util.GLState;
@@ -10,6 +11,7 @@ import org.andengine.util.debug.Debug;
 
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
+
 
 /**
  * (c) 2010 Nicolas Gramlich
@@ -95,6 +97,7 @@ public class EngineRenderer implements GLSurfaceView.Renderer {
 
 	@Override
 	public void onDrawFrame(final GL10 pGL) {
+		mTrace.beginSection("EngineRender::onDrawFrame");
 		synchronized(GLState.class) {
 			if (this.mMultiSampling && this.mConfigChooser.isCoverageMultiSampling()) {
 				final int GL_COVERAGE_BUFFER_BIT_NV = 0x8000;
@@ -107,6 +110,7 @@ public class EngineRenderer implements GLSurfaceView.Renderer {
 				Debug.e("GLThread interrupted!", e);
 			}
 		}
+		mTrace.endSection();
 	}
 
 	// ===========================================================

@@ -5,6 +5,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.andengine.BuildConfig;
+import org.andengine.Trace.mTrace;
 import org.andengine.audio.music.MusicFactory;
 import org.andengine.audio.music.MusicManager;
 import org.andengine.audio.sound.SoundFactory;
@@ -53,11 +54,14 @@ import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.WindowManager;
+
+import android.os.Trace;
 
 /**
  * (c) 2010 Nicolas Gramlich
@@ -407,7 +411,14 @@ public class Engine implements SensorEventListener, OnTouchListener, ITouchEvent
 	@Override
 	public boolean onTouch(final View pView, final MotionEvent pSurfaceMotionEvent) {
 		if(this.mRunning) {
+			Log.i("Echo", "onTouchEvent -- " + Thread.currentThread().getName());
+			if (pSurfaceMotionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+				mTrace.asyncTraceBegin(10, "TouchEvent", 2);
+				mTrace.beginSection("Engine::onTouch");
+			}
 			this.mTouchController.onHandleMotionEvent(pSurfaceMotionEvent);
+			if (pSurfaceMotionEvent.getAction() == MotionEvent.ACTION_DOWN)
+				mTrace.endSection();
 			try {
 				/* Because a human cannot interact 1000x per second, we pause the UI-Thread for a little. */
 				Thread.sleep(this.mEngineOptions.getTouchOptions().getTouchEventIntervalMilliseconds());
@@ -538,7 +549,9 @@ public class Engine implements SensorEventListener, OnTouchListener, ITouchEvent
 	}
 
 	void onTickUpdate() throws InterruptedException {
+		
 		if(this.mRunning) {
+			
 			final long secondsElapsed = this.getNanosecondsElapsed();
 
 			this.mEngineLock.lock();
@@ -548,11 +561,15 @@ public class Engine implements SensorEventListener, OnTouchListener, ITouchEvent
 				this.onUpdate(secondsElapsed);
 
 				this.throwOnDestroyed();
-
+				
 				this.mEngineLock.notifyCanDraw();
+				
 				this.mEngineLock.waitUntilCanUpdate();
+				
 			} finally {
+				
 				this.mEngineLock.unlock();
+				
 			}
 		} else {
 			this.mEngineLock.lock();
@@ -604,11 +621,10 @@ public class Engine implements SensorEventListener, OnTouchListener, ITouchEvent
 
 	public void onDrawFrame(final GLState pGLState) throws InterruptedException {
 		final EngineLock engineLock = this.mEngineLock;
-
+		
 		engineLock.lock();
 		try {
 			engineLock.waitUntilCanDraw();
-
 			this.mVertexBufferObjectManager.updateVertexBufferObjects(pGLState);
 			this.mTextureManager.updateTextures(pGLState);
 			this.mFontManager.updateFonts(pGLState);

@@ -4,6 +4,7 @@ import org.andengine.input.touch.TouchEvent;
 import org.andengine.util.adt.pool.RunnablePoolItem;
 import org.andengine.util.adt.pool.RunnablePoolUpdateHandler;
 
+import android.util.Log;
 import android.view.MotionEvent;
 
 /**
@@ -99,6 +100,7 @@ public abstract class BaseTouchController implements ITouchController  {
 
 		@Override
 		public void run() {
+			Log.i("Echo", "BaseTouchController:run -- " + Thread.currentThread().getName());
 			BaseTouchController.this.mTouchEventCallback.onTouchEvent(this.mTouchEvent);
 		}
 

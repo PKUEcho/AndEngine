@@ -1,5 +1,6 @@
 package org.andengine.input.touch.controller;
 
+import android.util.Log;
 import android.view.MotionEvent;
 
 /**
@@ -36,6 +37,7 @@ public class SingleTouchController extends BaseTouchController {
 
 	@Override
 	public void onHandleMotionEvent(final MotionEvent pMotionEvent) {
+		Log.i("Echo", "SingleTouchController::onHandleMotionEvent -- " + Thread.currentThread().getName());
 		this.fireTouchEvent(pMotionEvent.getX(), pMotionEvent.getY(), pMotionEvent.getAction(), 0, pMotionEvent);
 	}
 
