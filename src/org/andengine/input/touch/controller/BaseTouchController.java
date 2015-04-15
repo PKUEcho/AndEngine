@@ -1,5 +1,6 @@
 package org.andengine.input.touch.controller;
 
+import org.andengine.Trace.EventTracer;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.util.adt.pool.RunnablePoolItem;
 import org.andengine.util.adt.pool.RunnablePoolUpdateHandler;
@@ -65,10 +66,11 @@ public abstract class BaseTouchController implements ITouchController  {
 
 	protected void fireTouchEvent(final float pX, final float pY, final int pAction, final int pPointerID, final MotionEvent pMotionEvent) {
 		final TouchEvent touchEvent = TouchEvent.obtain(pX, pY, pAction, pPointerID, MotionEvent.obtain(pMotionEvent));
-
+		EventTracer.proEventObject(pMotionEvent, touchEvent, "TouchEvent");  // Trace Events
 		final TouchEventRunnablePoolItem touchEventRunnablePoolItem = this.mTouchEventRunnablePoolUpdateHandler.obtainPoolItem();
 		touchEventRunnablePoolItem.set(touchEvent);
 		this.mTouchEventRunnablePoolUpdateHandler.postPoolItem(touchEventRunnablePoolItem);
+		EventTracer.rmEventObject(pMotionEvent);
 	}
 
 	// ===========================================================
@@ -110,6 +112,7 @@ public abstract class BaseTouchController implements ITouchController  {
 			final TouchEvent touchEvent = this.mTouchEvent;
 			touchEvent.getMotionEvent().recycle();
 			touchEvent.recycle();
+			EventTracer.rmEventObject(touchEvent);  // Trace Events
 		}
 	}
 }

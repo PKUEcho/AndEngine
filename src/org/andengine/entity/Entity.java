@@ -3,6 +3,7 @@ package org.andengine.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.andengine.Trace.EventTracer;
 import org.andengine.engine.camera.Camera;
 import org.andengine.engine.handler.IUpdateHandler;
 import org.andengine.engine.handler.UpdateHandlerList;
@@ -1379,6 +1380,7 @@ public class Entity implements IEntity {
 
 				{ /* Draw children in front of this Entity. */
 					for(; i < childCount; i++) {
+						EventTracer.rmEventObject(children.get(i));
 						children.get(i).onDraw(pGLState, pCamera);
 					}
 				}

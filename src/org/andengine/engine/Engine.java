@@ -5,6 +5,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.andengine.BuildConfig;
+import org.andengine.Trace.EventTracer;
 import org.andengine.Trace.mTrace;
 import org.andengine.audio.music.MusicFactory;
 import org.andengine.audio.music.MusicManager;
@@ -411,10 +412,11 @@ public class Engine implements SensorEventListener, OnTouchListener, ITouchEvent
 	@Override
 	public boolean onTouch(final View pView, final MotionEvent pSurfaceMotionEvent) {
 		if(this.mRunning) {
-			Log.i("Echo", "onTouchEvent -- " + Thread.currentThread().getName());
+			Log.i("Echo", "Engine::onTouch " + pSurfaceMotionEvent.getAction() + " -- " + Thread.currentThread().getName());
 			if (pSurfaceMotionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-				mTrace.asyncTraceBegin(10, "TouchEvent", 2);
+				// mTrace.asyncTraceBegin(10, "TouchEvent", 2);
 				mTrace.beginSection("Engine::onTouch");
+				EventTracer.addEvent(pSurfaceMotionEvent, "MotionEvent");  // Trace Events
 			}
 			this.mTouchController.onHandleMotionEvent(pSurfaceMotionEvent);
 			if (pSurfaceMotionEvent.getAction() == MotionEvent.ACTION_DOWN)
@@ -597,7 +599,7 @@ public class Engine implements SensorEventListener, OnTouchListener, ITouchEvent
 
 		this.mSecondsElapsedTotal += pSecondsElapsed;
 		this.mLastTick += pNanosecondsElapsed;
-
+	
 		this.mTouchController.onUpdate(pSecondsElapsed);
 		this.onUpdateUpdateHandlers(pSecondsElapsed);
 		this.onUpdateScene(pSecondsElapsed);
